@@ -18,3 +18,7 @@ You are a senior code reviewer. Compare the original and migrated code.
 Original:
 ```python
 {original_code}
+Migrated:
+
+python
+{migrated_code}
