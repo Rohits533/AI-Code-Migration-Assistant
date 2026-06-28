@@ -1,5 +1,12 @@
+
+---
+
+## 📄 `app.py` (Complete & Correct — with AI Integration)
+
+```python
 import streamlit as st
 from migration_engine import apply_migration
+from ai_review import review_migration
 
 st.set_page_config(
     page_title="AI Code Migration Assistant",
@@ -70,7 +77,7 @@ st.markdown("""
 # ============================================================
 
 st.markdown('<div class="main-header">🚀 AI Code Migration Assistant</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Automatically rename variables and arguments using AST transformation</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">Automatically rename variables and arguments using AST transformation + AI explanations</div>', unsafe_allow_html=True)
 
 # ============================================================
 # SIDEBAR
@@ -84,13 +91,25 @@ with st.sidebar:
     1. **Paste** your Python code  
     2. **Define** rename mappings (old → new)  
     3. **Migrate** — AST transforms the code  
+    4. **Review** — AI explains what changed
     """)
     st.markdown("---")
     st.markdown("### 🔐 Security")
     st.markdown("✅ Your code is **not stored**")
+    st.markdown("✅ API key is securely stored in Streamlit Secrets")
     st.markdown("---")
     st.markdown("### 📊 Stats")
     st.markdown(f"**Migrations:** 0 (pending)")
+
+# ============================================================
+# GET API KEY FROM SECRETS
+# ============================================================
+
+try:
+    groq_api_key = st.secrets["GROQ_API_KEY"]
+except KeyError:
+    st.error("🚨 GROQ_API_KEY not found in Streamlit Secrets. Please add it in the app settings.")
+    groq_api_key = None
 
 # ============================================================
 # MAIN UI
@@ -142,6 +161,20 @@ if migrate_btn:
             with col_after:
                 st.markdown("**✅ After**")
                 st.code(migrated_code, language="python")
+            
+            # AI Review (only if API key exists)
+            if groq_api_key:
+                try:
+                    with st.spinner("🧠 Getting AI summary..."):
+                        ai_summary = review_migration(code_input, migrated_code, groq_api_key)
+                    
+                    st.markdown("---")
+                    st.subheader("🧠 AI Summary")
+                    st.info(ai_summary)
+                except Exception as e:
+                    st.warning(f"⚠️ AI review failed: {e}")
+            else:
+                st.info("ℹ️ AI review is disabled. Add a GROQ_API_KEY to enable it.")
 
 # ============================================================
 # FOOTER
@@ -149,7 +182,7 @@ if migrate_btn:
 
 st.markdown("""
 <div class="footer">
-    Built with ❤️ using Streamlit • AST<br>
+    Built with ❤️ using Streamlit • AST • Groq API<br>
     <a href="https://github.com/Rohits533/AI-Code-Migration-Assistant" target="_blank">View on GitHub</a>
 </div>
 """, unsafe_allow_html=True)
