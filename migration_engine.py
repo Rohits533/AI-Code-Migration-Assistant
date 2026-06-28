@@ -1,9 +1,6 @@
 import ast
 
 class MigrationEngine(ast.NodeTransformer):
-    """
-    Applies code migrations using AST transformation.
-    """
     def __init__(self, rename_map):
         self.rename_map = rename_map
 
@@ -19,7 +16,7 @@ class MigrationEngine(ast.NodeTransformer):
 
 def apply_migration(code, rename_map):
     """
-    Parses code, applies transformations, and returns the new code.
+    Parses code, applies multiple renames, and returns the new code.
     """
     try:
         tree = ast.parse(code)
