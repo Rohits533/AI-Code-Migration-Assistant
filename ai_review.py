@@ -12,9 +12,11 @@ def review_migration(original_code, migrated_code, api_key):
             "Content-Type": "application/json"
         }
 
+        # Fixed: Properly structured prompt and closed the triple quotes
         prompt = f"""
 You are a senior code reviewer. Compare the original and migrated code.
+Provide a clear summary of changes, potential bugs, and optimization suggestions.
 
-Original:
+Original Code:
 ```python
 {original_code}
